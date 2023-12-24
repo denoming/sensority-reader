@@ -19,7 +19,7 @@
 #define INDEX_HUMIDITY (3)
 #define INDEX_IAQ (4)
 #define INDEX_ECO2 (5)
-#define INDEX_EVOC (6)
+#define INDEX_EBVOC (6)
 #define INDEX_TVOC (7)
 
 static const IPAddress MQTT_SERVER(192, 168, 1, 10);
@@ -30,8 +30,8 @@ static const char* MQTT_TOPICS[] = {
     "gas",
     "humidity",
     "iaq",
+    "eCo2",
     "eBreathVOC",
-    "eCO2",
     "TVOC",
 };
 
@@ -242,29 +242,30 @@ void processDataOnSensor1()
 
     values.clear();
     values["value"] = sensor1.gasResistance;
+    values["percentage"] = sensor1.gasPercentage;
+    values["percentageAccuracy"] = sensor1.gasPercentageAcccuracy;
     len = serializeJson(values, dataBuffer, sizeof(dataBuffer));
     mqttClient.publish(MQTT_TOPICS[INDEX_GAS], dataBuffer, len);
 
     values.clear();
     values["value"] = sensor1.iaq;
-    values["raw"] = sensor1.staticIaq;
     values["accuracy"] = sensor1.iaqAccuracy;
+    values["static"] = sensor1.staticIaq;
+    values["staticAccuracy"] = sensor1.staticIaqAccuracy;
     len = serializeJson(values, dataBuffer, sizeof(dataBuffer));
     mqttClient.publish(MQTT_TOPICS[INDEX_IAQ], dataBuffer, len);
 
     values.clear();
-    values["value"] = sensor1.co2Equivalent;
-    values["accuracy"] = sensor1.co2Accuracy;
     values["equivalent"] = sensor1.co2Equivalent;
+    values["accuracy"] = sensor1.co2Accuracy;
     len = serializeJson(values, dataBuffer, sizeof(dataBuffer));
     mqttClient.publish(MQTT_TOPICS[INDEX_ECO2], dataBuffer, len);
 
     values.clear();
-    values["value"] = sensor1.breathVocEquivalent;
-    values["accuracy"] = sensor1.breathVocAccuracy;
     values["equivalent"] = sensor1.breathVocEquivalent;
+    values["accuracy"] = sensor1.breathVocAccuracy;
     len = serializeJson(values, dataBuffer, sizeof(dataBuffer));
-    mqttClient.publish(MQTT_TOPICS[INDEX_EVOC], dataBuffer, len);
+    mqttClient.publish(MQTT_TOPICS[INDEX_EBVOC], dataBuffer, len);
 
     calibrateStatus = true;
     calibrateTempreture = sensor1.temperature;
